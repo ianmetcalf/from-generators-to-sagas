@@ -1,0 +1,25 @@
+{
+  "name": "from-generators-to-sagas",
+  "version": "1.0.0",
+  "description": "Presentation on ES6 generators and redux saga",
+  "homepage": "https://github.com/ianmetcalf/from-generators-to-sagas",
+  "author": "Ian Metcalf",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ianmetcalf/from-generators-to-sagas.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ianmetcalf/from-generators-to-sagas/issues"
+  },
+  "scripts": {
+    "bower": "grunt bower",
+    "start": "grunt serve"
+  },
+  "dependencies": {
+    "grunt": "~1.0.1",
+    "grunt-bower-task": "~0.4.0",
+    "grunt-contrib-connect": "~1.0.2",
+    "grunt-contrib-watch": "~1.0.0"
+  }
+}
