@@ -33,6 +33,7 @@
 
     <script src="lib/js/head.min.js"></script>
     <script src="lib/js/reveal.js"></script>
+    <script src="js/initKlipse.js"></script>
 
     <script>
       // More info https://github.com/hakimel/reveal.js#configuration
@@ -42,6 +43,9 @@
         // More info https://github.com/hakimel/reveal.js#dependencies
         dependencies: []
       });
+
+      // Initialize all klipse snippets and convert to iframes
+      document.querySelectorAll('klipse-snippet').forEach(initKlipse);
     </script>
   </body>
 </html>
