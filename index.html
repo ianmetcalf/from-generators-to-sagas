@@ -28,6 +28,701 @@
             <small>ian metcalf</small>
           </p>
         </section>
+
+        <section>
+          <section>
+            <h3>ES6 Refresher</h3>
+          </section>
+
+          <section>
+            <h3>Arrow Functions</h3>
+
+            <klipse-snippet>
+              const fn = (param) => {
+                console.log(param);
+              };
+
+              fn('hi');
+
+              [1,2,3].map(n => n + 2).filter(n => n % 2);
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Object Shorthand</h3>
+
+            <klipse-snippet>
+              const value = 'some value';
+
+              const obj = {
+                method(param) {
+                  console.log(param);
+                },
+
+                value,
+              };
+
+              obj.method('hi');
+
+              obj;
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Destructuring</h3>
+
+            <klipse-snippet height="600px">
+              const obj = {
+                prop: 'some value',
+                nested: {
+                  prop: 'nested value',
+                },
+              };
+
+              const {
+                prop: value1,
+                nested: {
+                  prop: value2,
+                },
+                value3 = 'default value',
+              } = obj;
+
+              ({value1, value2, value3});
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Rest</h3>
+
+            <klipse-snippet>
+              function fn(...args) {
+                return args;
+              }
+
+              fn(1, 2, 3)
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Spread</h3>
+
+            <klipse-snippet>
+              const values = [4, 8, 2, 5];
+
+              Math.min(...values);
+            </klipse-snippet>
+          </section>
+        </section>
+
+
+
+        <section>
+          <section>
+            <h3>ES6 Generators</h3>
+          </section>
+
+          <section>
+            <h3>Generator Function</h3>
+
+            <p>Factory for generator objects</p>
+
+            <klipse-snippet>
+              function* numbers(n) {
+                for (let i = 1; i <= n; i += 1) {
+                  yield i;
+                }
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Generator Objects</h3>
+
+            <klipse-snippet>
+              function* numbers(n) {
+                for (let i = 1; i <= n; i += 1) {
+                  yield i;
+                }
+              }
+
+              const it = numbers(2);
+
+              it.next();
+              // it.next();
+              // it.next();
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Generator Objects Are Iterable</h3>
+
+            <klipse-snippet>
+              function* numbers(n) {
+                for (let i = 1; i <= n; i += 1) {
+                  yield i;
+                }
+              }
+
+              for (let n of numbers(2)) {
+                console.log(n);
+              }
+
+              [...numbers(3)];
+            </klipse-snippet>
+          </section>
+        </section>
+
+
+
+        <section>
+          <section>
+            <h3>Let's Create a Runner</h3>
+          </section>
+
+          <section>
+            <h3>Simple Runner</h3>
+
+            <klipse-snippet height="600px" data-async-code="true">
+              function* numbers(n) {
+                for (let i = 1; i <= n; i += 1) {
+                  console.log(yield i);
+                }
+              }
+
+              function runner(fn, ...args) {
+                const it = fn(...args);
+
+                function step(value) {
+                  const result = it.next(value);
+
+                  if (!result.done) {
+                    setImmediate(() => step(result.value));
+                  }
+                }
+
+                setImmediate(step);
+              }
+
+              // runner(numbers, 3);
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Promise Based Runner</h3>
+
+            <klipse-snippet>
+              function runner(fn, ...args) {
+                return new Promise(resolve => {
+                  const it = fn(...args);
+
+                  function step(value) {
+                    const result = it.next(value);
+
+                    if (!result.done) {
+                      Promise.resolve(result.value).then(step);
+                    } else {
+                      resolve(result.value);
+                    }
+                  }
+
+                  setImmediate(step);
+                });
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Promise Based Runner in Action</h3>
+
+            <klipse-snippet height="600px" data-external-libs="js/promiseRunner.js" data-async-code="true">
+              function* main(steps) {
+                for (let i = 1; i <= steps; i += 1) {
+                  const start = now();
+
+                  yield delay(Math.random() * 5);
+
+                  console.log(`Completed step ${ i } in ${ now() - start } secs`);
+                }
+              }
+
+              function now() {
+                return Math.floor(Date.now() / 1000);
+              }
+
+              function delay(sec) {
+                return new Promise(resolve => setTimeout(resolve, sec * 1000));
+              }
+
+              // runner(main, 3);
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Effect Based Runner</h3>
+
+            <klipse-snippet>
+              function effect(type, ...args) {
+                return {
+                  effect: type,
+                  args,
+                };
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Effect Based Runner</h3>
+
+            <klipse-snippet height="600px">
+              function runEffect(value) {
+                if (!value || !value.effect) return Promise.resolve(value);
+
+                if (value.effect === 'CALL') {
+                  const [fn, ...fnArgs] = value.args;
+
+                  return runEffect(fn(...fnArgs));
+                }
+
+                if (value.effect === 'FORK') {
+                  const [fn, ...fnArgs] = value.args;
+
+                  setImmediate(() => runEffect(fn(...fnArgs)));
+
+                  return Promise.resolve();
+                }
+
+                throw new Error('Unknown effect');
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Effect Based Runner</h3>
+
+            <klipse-snippet>
+              function runner(fn, ...args) {
+                return new Promise(resolve => {
+                  const it = fn(...args);
+
+                  function step(value) {
+                    const result = it.next(value);
+
+                    if (!result.done) {
+                      runEffect(result.value).then(step);
+                    } else {
+                      resolve(result.value);
+                    }
+                  }
+
+                  setImmediate(step);
+                });
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Effect Based Runner in Action</h3>
+
+            <klipse-snippet height="600px" data-external-libs="js/effectRunner.js,js/util.js" data-async-code="true">
+              function* main(workers) {
+                for (let i = 1; i <= workers; i += 1) {
+                  yield effect('FORK', runner, worker, i);
+                }
+              }
+
+              function* worker(id) {
+                const start = now();
+
+                console.log(`Worker ${ id } started`);
+
+                yield effect('CALL', delay, Math.random() * 5);
+
+                console.log(`Worker ${ id } completed in ${ now() - start } secs`);
+              }
+
+              // runner(main, 2);
+            </klipse-snippet>
+          </section>
+        </section>
+
+
+
+        <section>
+          <section>
+            <h3>Communicating Sequential Processes</h3>
+          </section>
+
+          <section>
+            <h3>CSP Channel</h3>
+
+            <klipse-snippet height="600px">
+              const CLOSED = null;
+
+              function channel() {
+                let closed = false;
+
+                const takers = [];
+                const putters = [];
+
+                return {
+                  put(value, callback = () => {}) {
+                    if (closed) return callback(false);
+
+                    if (takers.length) {
+                      const {fn} = takers.shift();
+
+                      setImmediate(() => fn(value));
+
+                      callback(true);
+                    } else {
+                      putters.push({fn: callback, value});
+                    }
+                  },
+
+                  take(callback = () => {}) {
+                    if (closed) return callback(CLOSED);
+
+                    if (putters.length) {
+                      const {fn, value} = putters.shift();
+
+                      setImmediate(() => fn(true));
+
+                      callback(value);
+                    } else {
+                      takers.push({fn: callback});
+                    }
+                  },
+
+                  close() {
+                    if (closed) return;
+
+                    closed = true;
+
+                    while (takers.length) {
+                      const {fn} = takers.shift();
+
+                      setImmediate(() => fn(CLOSED));
+                    }
+
+                    while (putters.length) {
+                      const {fn} = putters.shift();
+
+                      setImmediate(() => fn(false));
+                    }
+                  },
+
+                  isClosed() {
+                    return closed;
+                  },
+                };
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>CSP Effects </h3>
+
+            <klipse-snippet>
+              function runEffect(value) {
+                // ...
+
+                if (value.effect === 'PUT') {
+                  const [chan, val] = value.args;
+
+                  return new Promise(resolve => chan.put(val, resolve));
+                }
+
+                if (value.effect === 'TAKE') {
+                  const [chan] = value.args;
+
+                  return new Promise(resolve => chan.take(resolve));
+                }
+
+                // ...
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>CSP Example</h3>
+
+            <klipse-snippet height="600px" data-external-libs="js/cspRunner.js,js/util.js" data-async-code="true">
+              function* main(workers, duration) {
+                const ch = channel();
+
+                for (let i = 1; i <= workers; i += 1) {
+                  yield effect('FORK', runner, worker, i, ch);
+                }
+
+                setTimeout(() => ch.close(), duration * 1000);
+
+                while (!ch.isClosed()) {
+                  const work = effect('CALL', delay, Math.random() * 5);
+
+                  yield effect('PUT', ch, work);
+                }
+
+                console.log('Main done');
+              }
+
+              function* worker(id, ch) {
+                while (true) {
+                  const work = yield effect('TAKE', ch);
+
+                  if (work === CLOSED) break;
+
+                  const start = now();
+
+                  yield work;
+
+                  console.log(`Worker ${ id } finished in ${ now() - start } secs`);
+                }
+
+                console.log(`Worker ${ id } done`);
+              }
+
+              // runner(main, 3, 10);
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>CSP Example 2</h3>
+
+            <klipse-snippet height="600px" data-external-libs="js/cspRunner.js,js/util.js" data-async-code="true">
+              function* main(count) {
+                const ch = channel();
+
+                document.addEventListener('click', e => ch.put(e));
+
+                for (let i = 1; i <= count; i += 1) {
+                  const result = yield effect('TAKE', ch);
+
+                  if (result !== CLOSED) {
+                    console.log(`click ${ i }`);
+                  }
+                }
+
+                ch.close();
+              }
+
+              // runner(main, 3);
+            </klipse-snippet>
+          </section>
+        </section>
+
+
+
+        <section>
+          <section>
+            <h3>Redux Saga</h3>
+
+            <p class="fragment">Uses es6 generators to orchestrate side effects in redux</p>
+          </section>
+
+          <section data-transition="slide-in fade-out">
+            <h3>Redux Architecture</h3>
+
+            <img src="imgs/reduxArchitecture.svg" style="border:none" />
+          </section>
+
+          <section data-transition="fade-in slide-out">
+            <h3>Redux Architecture</h3>
+
+            <img src="imgs/reduxArchitectureWithSaga.svg" style="border:none" />
+          </section>
+
+          <section>
+            <h3>Saga Middleware</h3>
+
+            <klipse-snippet>
+              function configureStore(initialState) {
+                const sagaMiddleware = createSagaMiddleware();
+
+                const enhancer = applyMiddleware(sagaMiddleware);
+
+                const store = createStore(rootReducer, initialState, enhancer);
+
+                sagaMiddleware.run(rootSaga);
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Saga Example</h3>
+
+            <klipse-snippet data-external-libs="js/sagaEffects.js">
+              function* saga() {
+                const action = yield take('SOME_ACTION');
+
+                yield put({
+                  type: 'OTHER_ACTION',
+                });
+
+                yield call(console.log, 'completed', action);
+              }
+
+              // [...saga()];
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Easy to test</h3>
+          </section>
+
+          <section>
+            <h3>What about thunks</h3>
+          </section>
+
+          <section>
+            <h3>Limitations</h3>
+          </section>
+
+          <section>
+            <h3>Channels</h3>
+          </section>
+        </section>
+
+
+
+        <section>
+          <section>
+            <h3>Saga Effects API</h3>
+          </section>
+
+          <section>
+            <h3 style="text-transform:none">take( pattern | matcher | channel )</h3>
+
+            <p>Stop generator until matching action is dispatched</p>
+
+            <klipse-snippet height="200px">
+              function* saga() {
+                const action = yield take('SOME_ACTION');
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3 style="text-transform:none">put( action )</h3>
+
+            <p>Dispatch action and continue</p>
+
+            <klipse-snippet height="200px">
+              function* saga() {
+                yield put({
+                  type: 'SOME_ACTION',
+                });
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3 style="text-transform:none">call( saga | function , ...args )</h3>
+
+            <p>Run saga or function and wait until completed</p>
+
+            <klipse-snippet height="200px">
+              function* saga() {
+                yield call(fn, ...args);
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3 style="text-transform:none">fork( saga | function , ...args )</h3>
+
+            <p>Run saga or function without waiting</p>
+
+            <klipse-snippet height="200px">
+              function* saga() {
+                yield fork(fn, ...args);
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3 style="text-transform:none">select( selector , ...args )</h3>
+
+            <p>Return state from redux store</p>
+
+            <klipse-snippet height="200px">
+              function* saga() {
+                const state = yield select();
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Effect Combinators</h3>
+          </section>
+
+          <section>
+            <h3 style="text-transform:none">[ ...effects ]</h3>
+
+            <p>Run effects and wait until all have completed</p>
+
+            <klipse-snippet height="300px">
+              function* saga() {
+                const results = yield [
+                  call(fn, ...args),
+                  take('SOME_ACTION'),
+                  take('OTHER_ACTION'),
+                ];
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3 style="text-transform:none">race({ ...effects })</h3>
+
+            <p>Run effects and wait until one has completed</p>
+
+            <klipse-snippet height="300px">
+              function* saga() {
+                const results = yield race({
+                  response: call(fn, ...args),
+                  someAction: take('SOME_ACTION'),
+                  otherAction: take('OTHER_ACTION'),
+                });
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3>Higher Order Effects</h3>
+          </section>
+
+          <section>
+            <h3 style="text-transform:none">takeEvery( pattern | matcher , saga , ...args )</h3>
+
+            <p>Run saga for each matching action</p>
+
+            <klipse-snippet height="200px">
+              function* saga() {
+                yield takeEvery('SOME_ACTION', someSaga, ...args);
+              }
+            </klipse-snippet>
+          </section>
+
+          <section>
+            <h3 style="text-transform:none">takeLatest( pattern | matcher , saga , ...args )</h3>
+
+            <p>Run saga for most recent matching action</p>
+
+            <klipse-snippet height="200px">
+              function* saga() {
+                yield takeLatest('SOME_ACTION', someSaga, ...args);
+              }
+            </klipse-snippet>
+          </section>
+        </section>
+
+        <section>
+          <h3>Demo time</h3>
+        </section>
+
+        <section>
+          <h3>Questions</h3>
+        </section>
       </div>
     </div>
 
