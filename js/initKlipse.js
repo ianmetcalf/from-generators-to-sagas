@@ -1,3 +1,5 @@
+const VIM_MODE = /vim/i.test(window.location.search);
+
 function initKlipse(el) {
   const attrs = {
     'data-external-libs': [
@@ -33,7 +35,7 @@ function initKlipse(el) {
         window.klipse_settings = {
           selector_eval_js: &quot;.klipse&quot;,
           codemirror_options_in: {
-            keyMap: &quot;vim&quot;,
+            keyMap: &quot;${ VIM_MODE ? 'vim' : 'default' }&quot;,
             theme: &quot;monokai&quot;,
             autoCloseBrackets: true
           }
@@ -44,7 +46,6 @@ function initKlipse(el) {
       &lt;script src=&quot;lib/js/vim.js&quot;&gt;&lt;/script&gt;
     "></iframe>
   `;
-
 }
 
 function formatAttributes(attrs) {
