@@ -131,7 +131,11 @@
                 for (let i = 1; i <= n; i += 1) {
                   yield i;
                 }
+
+                return 'Completed';
               }
+
+              const it = numbers(2);
             </klipse-snippet>
           </section>
 
@@ -143,6 +147,8 @@
                 for (let i = 1; i <= n; i += 1) {
                   yield i;
                 }
+
+                return 'Completed';
               }
 
               const it = numbers(2);
@@ -150,17 +156,20 @@
               it.next();
               // it.next();
               // it.next();
+              // it.next();
             </klipse-snippet>
           </section>
 
           <section>
-            <h3>Generator Objects Are Iterable</h3>
+            <h3>Generator Objects As Iterables</h3>
 
-            <klipse-snippet>
+            <klipse-snippet height="600px">
               function* numbers(n) {
                 for (let i = 1; i <= n; i += 1) {
                   yield i;
                 }
+
+                return 'Completed';
               }
 
               for (let n of numbers(2)) {
