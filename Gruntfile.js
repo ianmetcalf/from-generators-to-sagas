@@ -6,7 +6,21 @@ module.exports = function(grunt) {
       install: {
         options: {
           targetDir: 'lib',
-          layout: (type, pkg, src) => path.extname(src) === '.css' ? 'css' : 'js',
+          layout: (type, pkg, src) => {
+            switch(path.extname(src)) {
+              case '.js':
+                return 'js';
+              case '.css':
+                return 'css';
+              case '.eot':
+              case '.ttf':
+              case '.woff':
+              case '.woff2':
+                return path.join('fonts', pkg);
+              default:
+                return '';
+            }
+          },
           cleanup: true,
         },
       },
