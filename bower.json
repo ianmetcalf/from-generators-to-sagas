@@ -14,7 +14,8 @@
     "headjs": "latest",
     "klipse": "latest",
     "reveal.js": "latest",
-    "setImmediate": "latest"
+    "setImmediate": "latest",
+    "source-sans-pro": "latest"
   },
   "exportsOverride": {
     "codemirror": {
@@ -25,10 +26,13 @@
       "js": ["js/reveal.js"],
       "css": [
         "css/reveal.css",
-        "css/theme/black.css",
         "css/print/*.css"
       ]
-    }
+    },
+    "source-sans-pro": [
+      "css/source-sans-pro.css",
+      "fonts/source-sans-pro/*"
+    ]
   },
   "ignore": [
     "**/.*",
