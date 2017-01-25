@@ -2,7 +2,7 @@
   "name": "from-generators-to-sagas",
   "version": "1.0.0",
   "description": "Presentation on ES6 generators and redux saga",
-  "homepage": "https://github.com/ianmetcalf/from-generators-to-sagas",
+  "homepage": "http://metcalfbuilt.com/from-generators-to-sagas/",
   "authors": ["Ian Metcalf"],
   "license": "MIT",
   "repository": {
